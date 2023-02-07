@@ -1,0 +1,20 @@
+---
+title: "matcars summary"
+author: "Andrey povaliy"
+date: "2023-02-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Abstract
+
+The mean of mng in matcars is `r round(mean(mtcars$mpg),2)`.
+
+``` {r, echo=FALSE}
+head(mtcars$mpg)
+```
+
+
