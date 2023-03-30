@@ -17,4 +17,7 @@ The mean of mng in matcars is `r round(mean(mtcars$mpg),2)`.
 head(mtcars$mpg)
 ```
 
-
+Table Header | 
+------------- | -------------
+Table Cell | Cell 2
+Cell 3 | Cell 4
