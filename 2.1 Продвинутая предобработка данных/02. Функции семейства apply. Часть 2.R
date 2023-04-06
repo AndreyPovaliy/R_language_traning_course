@@ -4,12 +4,14 @@ head(airquality)
 
 apply(airquality, 2, mean, na.rm = T)
 
-colMeans()
+# аналог с мньшими аргументами
+colMeans(airquality,na.rm = T)
 colSums()
 rowMeans()
 rowSums()
 
 # step 3 
+# set.seed() (от set - задать, установить, и seed - начальное число)
 set.seed(42)
 
 d <- as.data.frame(matrix(rnorm(30), nrow = 5))
@@ -40,6 +42,7 @@ apply(d, 2, find_positive)
 
 
 # step 4
+#  если функция короткая, то можно внутри ф-ции написать пользовательскую функцию
 apply(array, margin, ...)
 head(iris)
 

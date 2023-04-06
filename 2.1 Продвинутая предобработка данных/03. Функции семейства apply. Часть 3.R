@@ -1,7 +1,7 @@
 # step 1 lapply 
 apply(array, margin, ...)
-
-#lapply(list, function)
+#apply для дата фрейм или матрицы
+#lapply(list, function) применение к списку и возвращает список
 
 my_list <- list(x = c(rnorm(30), NA), y = rnorm(10))
 str(my_list)
@@ -9,16 +9,20 @@ str(my_list)
 lapply(my_list, mean)
 lapply(my_list, mean, na.rm = T)
 lapply(my_list, function(x) x * 2)
-
+#lapply(list, function) применение к списку и возвращает дата фрейм
 sapply(my_list, range, na.rm = T, simplify = F)
 
 # step 2
 
 cars <- c("Mazda", "Volga", "Merc")
 car <- "Mazda RX4"  
-
+#grepl строчка входит в другую строчку
 sapply(cars, function(x) grepl(x, car))
 lapply(cars, function(x) grepl(x, car))
+
+#отбирает только количественные колонки в данных:
+  
+  iris_num <- iris[sapply(iris, is.numeric)]
 
 # step 3 by tapply
 tapply(mtcars$mpg, mtcars$am, function(x) mean(x))
@@ -37,7 +41,7 @@ vapply(list, function, FUN.VALUE = type, ...)
 vapply(mtcars, mean, FUN.VALUE = numeric(1))
 sapply(mtcars, mean)
 
-mapply(rep, c(1, 2, 3, 4), c(1, 2, 3, 4))
+mapply(rep, c(1, 2, 3, 4), c(1, 2, 2, 4))
 
 rep(1, 3)
 x <- c(20, 25, 13)
