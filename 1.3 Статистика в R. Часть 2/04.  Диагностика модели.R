@@ -32,6 +32,9 @@ ggplot(swiss, aes(x = Examination)) +
 ggplot(swiss, aes(x = Education)) + 
   geom_histogram()
 
+# логарифм хороший способ к приведению нормальности распределения
+ggplot(swiss, aes(x = log(Education))) + 
+  geom_histogram()
 
 # linearity 
 
@@ -65,10 +68,10 @@ ggplot(swiss, aes(x = Examination, y = Education)) +
 
 
 ggplot(swiss, aes(x = lm1_fitted, y = lm1_resid)) + 
-  geom_point(size = 3) + geom_hline(y=0, col = 'red', lwd = 1)
+  geom_point(size = 3) + geom_hline(yintercept = 0, col = 'red', lwd = 1)
 
 ggplot(swiss, aes(x = lm2_fitted, y = lm2_resid)) + 
-  geom_point(size = 3) + geom_hline(y=0, col = 'red', lwd = 1)
+  geom_point(size = 3) + geom_hline(yintercept=0, col = 'red', lwd = 1)
 
 
 # independence of errors
@@ -92,7 +95,7 @@ ggplot(swiss, aes(x = lm2_fitted, y = lm2_resid)) +
 # Errors Normally distributed
 
 ggplot(swiss, aes(x = lm1_resid)) + 
-  geom_histogram(binwidth = 4, fill = 'white', col = 'black')
+  geom_histogram(binwidth = 4, fill = 'red', col = 'black')
 
 qqnorm(lm1$residuals)
 qqline(lm1$residuals)
@@ -124,17 +127,18 @@ my_vector <- c(0.027, 0.079, 0.307, 0.098, 0.021, 0.091,
                0.061, 0.523)
 # Какое преобразование позволяет сделать 
 # его распределение нормальным (согласно shapiro.test)?
+shapiro.test(1/my_vector)
+hist( sqrt(my_vector))
 
-
-# [ ] log(my_vector)
+# [-] log(my_vector)
 # 
-# [ ] sqrt(my_vector)
+# [+] sqrt(my_vector)
 # 
-# [ ] ни одно преобразование не работает
+# [-] ни одно преобразование не работает
 # 
-# [ ] 1/my_vector
+# [-] 1/my_vector
 # 
-# [ ] все преобразования работают
+# [-] все преобразования работают
 
 
 ## Task 2 ------------------------------------------------------------------
@@ -174,8 +178,11 @@ beta.coef(swiss[,c(1,4)])
 ?scale
 
 
+
 beta.coef <- function(x){
-  
+  df1 <- as.data.frame(scale(x), center = TRUE, scale = TRUE)
+  fit1 <- lm(df1[,1]~df1[,2],df1)[["coefficients"]]
+  return(fit1)
 }
 
 # То, что вы только что сделали, 
@@ -222,8 +229,19 @@ my_vector
 # но вы можете изучить справку о apply и sapply. 
 # Для решения данной задачи, эти функции могут пригодиться.
 
+
+
 normality.test  <- function(x){
-  
+  my_vector <- NULL
+  names_my_vector <- NULL
+  for (i in 1:ncol(x)){
+    
+    my_vector1 <- shapiro.test(x[,i])
+    my_vector <- c(my_vector,my_vector1$p.value)
+    names_my_vector <-c(names_my_vector,colnames(x[i]))
+  }
+  names(my_vector) <- names_my_vector
+  return(my_vector)
 }
 
 ## Task 4 ------------------------------------------------------------------  
@@ -233,15 +251,15 @@ normality.test  <- function(x){
 # Можно задать формулу модели прямо в функции gvlma. 
 # Чтобы увидеть основные статистики, 
 # нужно выполнить команду summary для объекта, созданного с помощью функции gvlma. 
+library(gvlma)
 
-
-x <- gvlma(fit)
-
-# или
-
-x <- gvlma(Y ~ X, data = mydata)
-
-summary(x)
+# x <- gvlma(fit)
+# 
+# # или
+# 
+# x <- gvlma(Y ~ X, data = mydata)
+# 
+# summary(x)
 
 # Например,
 # Загрузите себе прикреплённый к этому степу датасет и постройте регрессию, 
@@ -250,8 +268,9 @@ summary(x)
 # Введите в поле ответа p-значение для теста гетероскедастичности. 
 
 # Данные: https://stepik.org/media/attachments/lesson/12088/homosc.csv
-
-
+df244 <- read.csv("1.3 Статистика в R. Часть 2/homosc.csv")
+fit244 <- gvlma(DV ~ IV,df244)
+summary(fit244)
 
 ## Task 5 ------------------------------------------------------------------
 # Напишите функцию resid.norm, которая тестирует распределение остатков 
@@ -287,7 +306,15 @@ my_plot
 
 
 resid.norm  <- function(fit){
-  # put your code here  
+ vec <- fit$residuals
+ p <- shapiro.test(vec)
+ if(p$p.value<0.05){
+   ggplot(as.data.frame(fit$model), aes(x = vec)) + 
+     geom_histogram(fill = 'red')
+ }else{
+   ggplot(as.data.frame(fit$model), aes(x = vec)) + 
+     geom_histogram(fill = 'green')
+ }
 }
 
 
@@ -322,10 +349,18 @@ my_df <- data.frame(var1 = x1, var2 = x2, var3 = x3)
 high.corr(my_df)
 
 # [1] "var1" "var3"
+# rm(swiss)
+# swiss <- data.frame(swiss)
+x <- swiss
 
 high.corr <- function(x){
-  # put your code here  
-  
+  b <- cor(x)
+  diag(b) <- 0
+  b <- abs(round(b,3))
+  m <- matrix(b, nrow(b), ncol(b))
+  coordinates <- which(m == max(m), arr.ind = TRUE)
+  names <- colnames(b)[coordinates[2,]]
+  return(names)
 }
 
 
