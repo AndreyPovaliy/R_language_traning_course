@@ -1,10 +1,17 @@
-# step 2 mutate_each
+
+# lesson ------------------------------------------------------------------
+
+
+
+# step 2 mutate_each ---> mutate_all
 library(ggplot2)
 library(dplyr)
 
 d <- as_data_frame(matrix(rnorm(30), ncol = 5))
 
-mutate_each(d, funs(ifelse(. < 0, 0, .)))
+mutate_all(d, list(~ ifelse(. < 0, 0, .)))
+
+mutate_all(d, list(~ as.factor(.)))
 
 col_1 <- d$V1
 col_2 <- d$V2
@@ -59,4 +66,19 @@ summarise(gr_diamonds,
 # step 9
 gr_mtcars <- group_by(mtcars, am, vs)
 my_means <- summarise_all(gr_mtcars, funs(mean))
+
+
+# tasks ------------------------------------------------------------------
+
+
+# tasks1 ------------------------------------------------------------------
+
+# Напишите функцию, all_to_factor, которая преобразует dataframe, 
+# переводя все его переменные в фактор.
+
+all_to_factor <- function(x){
+  mutate_all(x, list(~ as.factor(.)))
+  
+}
+
 
