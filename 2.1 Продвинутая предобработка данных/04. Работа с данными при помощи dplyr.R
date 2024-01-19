@@ -19,10 +19,13 @@ my.data.2 <- data.frame(x = rnorm(10), y = abs(x))
 
 # step 5 select columns
 select(diamonds, 1, 2, 3)
+select(diamonds, cut)
+select(diamonds, cut:price)
+select(diamonds, starts_with('c'))
 diamonds[c("cut", "price", "color")]
 
 select(diamonds, contains("t"))
-
+slice(diamonds, 1:7)
 
 # step 6 slice rows
 slice(diamonds, c(1, 4, 5))
@@ -30,7 +33,7 @@ diamonds[c(1, 4, 5)]
 
 
 # step 7 filter observations
-filter(diamonds, carat > 0.3 | color == "J")
+filter(diamonds, carat > 1.3, color == "J")
 diamonds[diamonds$carat > 0.3 & diamonds$color == "J", ]
 subset(diamonds, carat > 0.3 & color == "J")
 
@@ -38,6 +41,8 @@ subset(diamonds, carat > 0.3 & color == "J")
 # steps 8 - 9 arrange and mutate
 arrange(diamonds, desc(price))
 diamonds[order(diamonds$price, diamonds$depth), ]
+
+rename(diamonds, new_cut=cut, new_carat=carat)
 
 m <- mutate(diamonds, 
             sqrt_price = sqrt(price), 
